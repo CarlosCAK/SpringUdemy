@@ -1,11 +1,14 @@
 package com.carlosjpa.libraryapi.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
+@Data
 @Table(name = "livro",schema = "public")
 public class Livro {
 
@@ -24,7 +27,7 @@ public class Livro {
     private LocalDate dataPublicacao;
 
     @Column(name = "preco", precision = 18, scale = 2)
-    private double preco;
+    private BigDecimal preco;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "genero",nullable = false)

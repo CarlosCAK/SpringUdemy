@@ -14,11 +14,11 @@ import java.util.UUID;
 @Setter
 public class Autor {
 
-    @Column
+    @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    @Column(name = "id", length = 100, nullable = false)
+    @Column(name = "nome", length = 100, nullable = false)
     private String nome;
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
