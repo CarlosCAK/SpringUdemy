@@ -33,7 +33,7 @@ public class Livro {
     @Column(name = "genero",nullable = false)
     private GeneroLivro genero;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_autor", nullable = false)
     private Autor autor;
 }
