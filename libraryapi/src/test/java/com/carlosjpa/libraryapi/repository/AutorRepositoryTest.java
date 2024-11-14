@@ -1,12 +1,16 @@
 package com.carlosjpa.libraryapi.repository;
 
 import com.carlosjpa.libraryapi.model.Autor;
+import com.carlosjpa.libraryapi.model.GeneroLivro;
+import com.carlosjpa.libraryapi.model.Livro;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +20,8 @@ public class AutorRepositoryTest {
 
     @Autowired
     AutorRepository autorRepository;
+    @Autowired
+    private LivroRepository livroRepository;
 
     @Test
     public void salvarTest(){
@@ -63,5 +69,35 @@ public class AutorRepositoryTest {
         var maria = autorRepository.findById(id).get();
         autorRepository.delete(maria);
     }
+    @Test
+    public void salvarAutorComLivrosTest(){
+        Autor autor = new Autor();
+        autor.setNome("Marcos");
+        autor.setNascionalidade("Americano");
+        autor.setDataNascimento(LocalDate.of(1970,12,11));
+        Livro l1 = new Livro();
+        l1.setTitulo("Ciencia infinita");
+        l1.setIsbn("1234-3112");
+        l1.setPreco(BigDecimal.valueOf(204));
+        l1.setGenero(GeneroLivro.CIENCIA);
+        l1.setDataPublicacao(LocalDate.of(1999, 1, 2));
+        l1.setAutor(autor);
+        Livro l2 = new Livro();
+        l2.setTitulo("Ciencia sem fim");
+        l2.setIsbn("12314-3112");
+        l2.setPreco(BigDecimal.valueOf(120));
+        l2.setGenero(GeneroLivro.CIENCIA);
+        l2.setDataPublicacao(LocalDate.of(2000, 1, 2));
+        l2.setAutor(autor);
+
+        autor.setLivros(new ArrayList<Livro>());
+
+        autor.getLivros().add(l1);
+        autor.getLivros().add(l2);
+
+        autorRepository.save(autor);
+
+    }
+
 
 }
