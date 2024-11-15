@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.annotation.Transient;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -96,7 +98,16 @@ public class AutorRepositoryTest {
         autor.getLivros().add(l2);
 
         autorRepository.save(autor);
+    }
+    @Test
+    @Transactional
+    public void listarLivrosAutor(){
+        var id = UUID.fromString("c3b54a89-d576-43c7-a71e-4e4907914863");
+        Autor autor = autorRepository.findById(id).get();
 
+        // buscar os livros do autor
+
+        System.out.println(livroRepository.findAllByAutor(autor));
     }
 
 
