@@ -35,7 +35,7 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
         select l.genero
         from Livro as l
         join l.autor a 
-        where a.nascionalidade = 'Brasileira'
+        where a.nacionalidade = 'Brasileira'
         order by l.genero
         """)
     List<String> listarGenerosAutoresBrasileiros();
@@ -55,4 +55,6 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
     @Transactional
     @Query("update Livro set dataPublicacao = ?1")
     void updateDataPublicacao(LocalDate datePublicacao);
+
+    boolean existsByAutor(Autor autor);
 }

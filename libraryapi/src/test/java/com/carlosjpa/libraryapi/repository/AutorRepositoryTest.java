@@ -29,7 +29,7 @@ public class AutorRepositoryTest {
     public void salvarTest(){
         Autor autor = new Autor();
         autor.setNome("José");
-        autor.setNascionalidade("Brasileira");
+        autor.setNacionalidade("Brasileira");
         autor.setDataNascimento(LocalDate.of(1950,1,31));
         var autorSalvo = autorRepository.save(autor);
         System.out.println("Autor salvo"+ autorSalvo);
@@ -75,7 +75,7 @@ public class AutorRepositoryTest {
     public void salvarAutorComLivrosTest(){
         Autor autor = new Autor();
         autor.setNome("Marcos");
-        autor.setNascionalidade("Americano");
+        autor.setNacionalidade("Americano");
         autor.setDataNascimento(LocalDate.of(1970,12,11));
         Livro l1 = new Livro();
         l1.setTitulo("Ciencia infinita");

@@ -2,7 +2,9 @@ package com.carlosjpa.libraryapi;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication
 public class Application {
 
@@ -16,7 +18,7 @@ public class Application {
 //	public static void exemploSalvarRegistro(AutorRepository autorRepository) {
 //		Autor autor = new Autor();
 //		autor.setNome("José");
-//		autor.setNascionalidade("Brasileira");
+//		autor.setNacionalidade("Brasileira");
 //		autor.setDataNascimento(LocalDate.of(1950,1,31));
 //
 //		var autorSalvo = autorRepository.save(autor);

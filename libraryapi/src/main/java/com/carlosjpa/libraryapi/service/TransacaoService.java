@@ -34,7 +34,7 @@ public class TransacaoService {
     // Salva autor
         Autor autor = new Autor();
         autor.setNome("Joao");
-        autor.setNascionalidade("Brasileira");
+        autor.setNacionalidade("Brasileira");
         autor.setDataNascimento(LocalDate.of(1950,1,31));
         autorRepository.save(autor);
 

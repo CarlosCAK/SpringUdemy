@@ -32,7 +32,7 @@ class LivroRepositoryTest {
         l1.setGenero(GeneroLivro.MISTERIO);
         l1.setDataPublicacao(LocalDate.of(1980, 1, 2));
 
-    Autor autor = autorRepository.findById(UUID.fromString("3cfcf6a2-6e40-4809-9b34-551816dc9957")).orElse(null);
+    Autor autor = autorRepository.findById(UUID.fromString("005e6f0e-5cad-4686-89ea-64e98e9cfabc")).orElse(null);
 
         l1.setAutor(autor);
 
@@ -50,7 +50,7 @@ class LivroRepositoryTest {
 
         Autor autor = new Autor();
         autor.setNome("Joao");
-        autor.setNascionalidade("Brasileira");
+        autor.setNacionalidade("Brasileira");
         autor.setDataNascimento(LocalDate.of(1950,1,31));
 
         autorRepository.save(autor);
@@ -71,7 +71,7 @@ class LivroRepositoryTest {
 
         Autor autor = new Autor();
         autor.setNome("Joao");
-        autor.setNascionalidade("Brasileira");
+        autor.setNacionalidade("Brasileira");
         autor.setDataNascimento(LocalDate.of(1950,1,31));
 
         l1.setAutor(autor);
