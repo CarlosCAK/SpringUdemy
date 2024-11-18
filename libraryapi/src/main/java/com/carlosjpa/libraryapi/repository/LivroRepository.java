@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface LivroRepository extends JpaRepository<Livro, UUID>, JpaSpecificationExecutor<Livro> {
@@ -19,7 +20,6 @@ public interface LivroRepository extends JpaRepository<Livro, UUID>, JpaSpecific
     List<Livro> findAllByAutor(Autor autor);
 
     List<Livro> findByTitulo(String titulo);
-    List<Livro> findByIsbn(String titulo);
 
     List<Livro> findByIsbnAndTitulo(String isbn, String titulo);
 
@@ -58,4 +58,8 @@ public interface LivroRepository extends JpaRepository<Livro, UUID>, JpaSpecific
     void updateDataPublicacao(LocalDate datePublicacao);
 
     boolean existsByAutor(Autor autor);
+
+    boolean existsByIsbn(String isbn);
+
+    Optional<Livro> findByIsbn(String isbn);
 }

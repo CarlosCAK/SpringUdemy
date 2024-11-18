@@ -2,8 +2,8 @@ package com.carlosjpa.libraryapi.Controller.common;
 
 import com.carlosjpa.libraryapi.Controller.dto.ErroCampo;
 import com.carlosjpa.libraryapi.Controller.dto.ErroResposta;
-import com.carlosjpa.libraryapi.exceptions.OperacaoNaoPermitidaException;
-import com.carlosjpa.libraryapi.exceptions.RegistroDuplicadoException;
+import com.carlosjpa.libraryapi.exceptions.*;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -48,5 +48,26 @@ public class GlobalExceptionHandler {
                 "Ocorreu um erro inesperado, entre em contato com a administracao",
                 List.of());
     }
+    @ExceptionHandler(AutorNaoEncontadoException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErroResposta handleAutorNaoEncontadoException(AutorNaoEncontadoException e){
+        return new ErroResposta(HttpStatus.NOT_FOUND.value(), e.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(LivroNaoSalvoException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErroResposta handleLivroNaoSalvoException(LivroNaoSalvoException e){
+        return new ErroResposta(HttpStatus.NOT_FOUND.value(), e.getMessage(), List.of());
+    }
+
+    @ExceptionHandler(CampoInvalidoException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ErroResposta handleCampoInvalidoException(CampoInvalidoException e){
+
+
+        return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(),
+                List.of(new ErroCampo(e.getCampo(), e.getMessage())));
+    }
+
 
 }

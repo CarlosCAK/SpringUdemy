@@ -1,10 +1,17 @@
 package com.carlosjpa.libraryapi.service;
 
+import com.carlosjpa.libraryapi.Controller.dto.CadastroLivroDTO;
+import com.carlosjpa.libraryapi.exceptions.LivroNaoSalvoException;
 import com.carlosjpa.libraryapi.model.GeneroLivro;
 import com.carlosjpa.libraryapi.model.Livro;
 import com.carlosjpa.libraryapi.repository.LivroRepository;
 import com.carlosjpa.libraryapi.repository.Specs.LivroSpecs;
+import com.carlosjpa.libraryapi.validator.LivroValidator;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +25,10 @@ import static com.carlosjpa.libraryapi.repository.Specs.LivroSpecs.*;
 public class LivroService {
 
     private final LivroRepository repository;
+    private final LivroValidator validator;
 
     public Livro salvar(Livro livro) {
+        validator.validar(livro);
         return repository.save(livro);
     }
 
@@ -30,7 +39,13 @@ public class LivroService {
     public void deletar(Livro livro) {
         repository.delete(livro);
     }
-    public List<Livro> pesquisa(String isbn, String titulo, String nomeAutor, GeneroLivro genero, Integer anoPublicacao) {
+    public Page<Livro> pesquisa(String isbn,
+                                String titulo,
+                                String nomeAutor,
+                                GeneroLivro genero,
+                                Integer anoPublicacao,
+                                Integer pagina,
+                                Integer tamanhoPagina) {
 //        Specification<Livro> specs = Specification.
 //                where(LivroSpecs.isbnEqual(isbn))
 //                .and(LivroSpecs.tituloLike(titulo))
@@ -49,7 +64,23 @@ public class LivroService {
         if(genero != null){
             specs = specs.and(generoEqual(genero));
         }
+        if(anoPublicacao != null){
+            specs = specs.and(anoPublicacaoEqual(anoPublicacao));
+        }
+        if(nomeAutor != null){
+            specs = specs.and(nomeAutorLike(nomeAutor));
+        }
+
+        Pageable pageableRequest = PageRequest.of(pagina,tamanhoPagina);
         
-        return repository.findAll(specs);
+        return repository.findAll(specs, pageableRequest);
+    }
+
+    public void atualizar(Livro livro) {
+        if(livro.getId() == null){
+            throw new LivroNaoSalvoException("O livro não está salvo na base de dados");
+        }
+        validator.validar(livro);
+        repository.save(livro);
     }
 }

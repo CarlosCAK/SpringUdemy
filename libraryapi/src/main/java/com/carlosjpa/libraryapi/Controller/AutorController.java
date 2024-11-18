@@ -91,7 +91,6 @@ public class AutorController implements GenericController {
         autorService.atualizar(autor);
 
         return ResponseEntity.noContent().build();
-
     }
 
 
