@@ -4,8 +4,10 @@ import com.carlosjpa.libraryapi.Controller.dto.CadastroLivroDTO;
 import com.carlosjpa.libraryapi.exceptions.LivroNaoSalvoException;
 import com.carlosjpa.libraryapi.model.GeneroLivro;
 import com.carlosjpa.libraryapi.model.Livro;
+import com.carlosjpa.libraryapi.model.Usuario;
 import com.carlosjpa.libraryapi.repository.LivroRepository;
 import com.carlosjpa.libraryapi.repository.Specs.LivroSpecs;
+import com.carlosjpa.libraryapi.security.SecurityService;
 import com.carlosjpa.libraryapi.validator.LivroValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +28,12 @@ public class LivroService {
 
     private final LivroRepository repository;
     private final LivroValidator validator;
+    private final SecurityService  securityService;
 
     public Livro salvar(Livro livro) {
         validator.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         return repository.save(livro);
     }
 

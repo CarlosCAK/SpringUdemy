@@ -6,6 +6,9 @@ import com.carlosjpa.libraryapi.exceptions.*;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +43,11 @@ public class GlobalExceptionHandler {
     public ErroResposta handleOperacaoNaoPermitidaException(OperacaoNaoPermitidaException e){
         return ErroResposta.respostaPadrao(e.getMessage());
     }
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handleAccessDeniedException(AccessDeniedException e){
+        return new ErroResposta(HttpStatus.FORBIDDEN.value(), "Acesso negado", List.of());
+    }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -67,6 +75,12 @@ public class GlobalExceptionHandler {
 
         return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(), e.getMessage(),
                 List.of(new ErroCampo(e.getCampo(), e.getMessage())));
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErroResposta handleUsernameNotFoundException(UsernameNotFoundException e){
+        return new ErroResposta(HttpStatus.NOT_FOUND.value(), e.getMessage(), List.of());
     }
 
 

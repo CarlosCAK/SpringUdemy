@@ -19,7 +19,7 @@ public class UsuarioService {
         usuario.setSenha(encoder.encode(senha));
         repository.save(usuario);
     }
-    private Usuario obterPorLogin(String login) {
+    public Usuario obterPorLogin(String login) {
         return repository.findByLogin(login);
     }
 }
