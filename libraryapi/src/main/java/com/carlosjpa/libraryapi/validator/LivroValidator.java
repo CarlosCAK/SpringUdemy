@@ -19,7 +19,7 @@ public class LivroValidator {
         if(existeComMesmoISBN(livro)){
             throw new RegistroDuplicadoException("ISBN Duplicado");
         }
-        if(isPrecoObrigatorio(livro)){
+        if(isPrecoObrigatorio(livro)){  
             throw new CampoInvalidoException("preco", "Para livros com ano de 2020 o ano é obrigatorio");
         }
     }

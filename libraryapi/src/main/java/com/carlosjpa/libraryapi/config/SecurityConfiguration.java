@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,9 +30,10 @@ public class SecurityConfiguration {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                .httpBasic(Customizer.withDefaults())
-                .formLogin(configurer -> {
-                    configurer.loginPage("/login").permitAll();
-                })
+//                .formLogin(configurer -> {
+//                    configurer.loginPage("/login").permitAll();
+//                })
+                .formLogin(Customizer.withDefaults())
                 .authorizeRequests(authorize -> {
                     authorize.requestMatchers("/login").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
@@ -39,6 +41,7 @@ public class SecurityConfiguration {
 
                     authorize.anyRequest().authenticated();
                 })
+                .oauth2Login(Customizer.withDefaults())
                 .build()
                 ;
     }
@@ -49,7 +52,7 @@ public class SecurityConfiguration {
     }
 
     // O objeto encoder será autowired do bean criado acima  automaticamente pelo spring
-    @Bean
+    // ESTA DESATIVADO
     public UserDetailsService userDetailsService(UsuarioService usuarioService) {
 //        UserDetails user1 = User.builder()
 //                .username("usuario").
@@ -63,6 +66,10 @@ public class SecurityConfiguration {
 
 
         return new CustomUserDatailsService(usuarioService);
+    }
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
     }
 
 }

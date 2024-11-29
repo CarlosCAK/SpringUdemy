@@ -64,7 +64,7 @@ public class LivroController implements GenericController {
     }
     @PreAuthorize("hasAnyRole('OPERADOR','GERENTE')")
     @GetMapping
-    public ResponseEntity<Page<ResultadoPesquisaLivroDTO>> listar(
+    public ResponseEntity<List<ResultadoPesquisaLivroDTO>> listar(
             @RequestParam(value = "isbn", required = false) String isbn,
             @RequestParam(value = "nome-autor" , required = false) String nomeAutor,
             @RequestParam(value = "genero" , required = false) GeneroLivro genero,
@@ -77,8 +77,7 @@ public class LivroController implements GenericController {
 
         Page<Livro> paginaResultado = service.pesquisa(isbn,titulo,nomeAutor,genero,anoPublicacao,pagina,tamanhoPagina);
 
-        Page<ResultadoPesquisaLivroDTO> paginaResultadoDto = paginaResultado.map(mapper::toDTO);
-
+        List<ResultadoPesquisaLivroDTO> paginaResultadoDto = paginaResultado.map(mapper::toDTO).getContent();
 
         return ResponseEntity.ok(paginaResultadoDto);
     }
