@@ -72,6 +72,10 @@ public class AutorService {
         return autorRepository.findAll(autorExample);
     }
     public boolean possuiLivro(Autor autor){
+        
         return livroRepository.existsByAutor(autor);
+
     }
+
+
 }

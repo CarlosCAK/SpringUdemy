@@ -1,8 +1,13 @@
 package com.carlosjpa.libraryapi.config;
 
 
-import com.carlosjpa.libraryapi.security.CustomUserDatailsService;
-import com.carlosjpa.libraryapi.service.UsuarioService;
+import com.carlosjpa.libraryapi.security.JwtCustomAuthenticationFilter;
+import com.carlosjpa.libraryapi.security.LoginSocialSucessHandler;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,13 +17,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
@@ -26,14 +36,17 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   LoginSocialSucessHandler sucessHandler,
+                                                   JwtCustomAuthenticationFilter jwtCustomAuthenticationFilter) throws Exception {
         return http
+
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                .httpBasic(Customizer.withDefaults())
-//                .formLogin(configurer -> {
-//                    configurer.loginPage("/login").permitAll();
-//                })
-                .formLogin(Customizer.withDefaults())
+                .formLogin(configurer -> {
+                    configurer.loginPage("/login").permitAll();
+                })
                 .authorizeRequests(authorize -> {
                     authorize.requestMatchers("/login").permitAll();
                     authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
@@ -41,35 +54,60 @@ public class SecurityConfiguration {
 
                     authorize.anyRequest().authenticated();
                 })
-                .oauth2Login(Customizer.withDefaults())
+                .oauth2Login(oauth2 ->{
+                    oauth2.loginPage("/login")
+                    .successHandler(sucessHandler);
+                })
+                .addFilterAfter(jwtCustomAuthenticationFilter, BasicAuthenticationFilter.class)
+                .oauth2ResourceServer(oauth2RS -> oauth2RS.jwt(Customizer.withDefaults()))
                 .build()
                 ;
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
-
-    // O objeto encoder será autowired do bean criado acima  automaticamente pelo spring
-    // ESTA DESATIVADO
-    public UserDetailsService userDetailsService(UsuarioService usuarioService) {
-//        UserDetails user1 = User.builder()
-//                .username("usuario").
-//                password(encoder.encode("123")).
-//                roles("USER").build();
-//
-//        UserDetails user2 = User.builder().
-//                username("admin").
-//                password(encoder.encode("123")).
-//                roles("ADMIN").build();
-
-
-        return new CustomUserDatailsService(usuarioService);
-    }
+    // Configura o prefixo ROLE
     @Bean
     public GrantedAuthorityDefaults grantedAuthorityDefaults() {
         return new GrantedAuthorityDefaults("");
+    }
+
+    // Configura no token JWT o prefixo Scope
+    @Bean
+    public JwtAuthenticationConverter   jwtAuthenticationConverter(){
+        var authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthorityPrefix("");
+
+        var converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+
+        return converter;
+    }
+
+    // Configurando a geração do token JWK - Json Web Key
+    @Bean
+    public JWKSource<SecurityContext> jwkSource() throws  Exception{
+        RSAKey rsaKey = gerarChaveRSA();
+        JWKSet jwkSet = new JWKSet(rsaKey);
+        return new ImmutableJWKSet<>(jwkSet);
+    }
+    // Gerar par de chaves RSA
+    private RSAKey gerarChaveRSA() throws Exception {
+
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(2048);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+
+        RSAPublicKey chavePublica = (RSAPublicKey) keyPair.getPublic();
+        RSAPrivateKey chavePrivatea = (RSAPrivateKey) keyPair.getPrivate();
+
+        return new RSAKey
+                .Builder(chavePublica)
+                .privateKey(chavePrivatea)
+                .keyID(UUID.randomUUID().toString())
+                .build();
+    }
+    @Bean
+    public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource ) {
+        return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
 }

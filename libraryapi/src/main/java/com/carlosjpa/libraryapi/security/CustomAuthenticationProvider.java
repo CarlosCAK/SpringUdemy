@@ -35,8 +35,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if(senhaBatem){
             return new CustomAuthentication(usuarioEncontrado);
         }
-
-
         throw getErroUsuarioNaoEncontrado();
     }
 

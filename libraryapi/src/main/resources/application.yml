@@ -18,7 +18,7 @@ spring:
       client:
         registration:
           google:
-            client-id: 190290003630-g5is505ggal54c1mus7g7rlc56s29146.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
 server:
   port: 8081
