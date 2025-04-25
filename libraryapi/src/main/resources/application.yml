@@ -2,23 +2,23 @@ spring:
   application:
     name: libraryapi
   datasource:
-    url: jdbc:postgresql://localhost:5432/library
+    url: jdbc:postgresql://localhost:5432/library_api?createDatabaseIfNotExist=true
     username: postgres
-    password: postgres
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
 #      ddl-auto: update // Faz com que as tabelas sejam criadas dinamicamente
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
-      hibernate.format_sql: true]
+      hibernate.format_sql: true
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
+            client-id: "${GOOGLE_CLIENT_ID}"
+            client-secret: "${GOOGLE_CLIENT_SECRET}"
 server:
   port: 8081

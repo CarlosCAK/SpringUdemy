@@ -7,6 +7,10 @@ import com.carlosjpa.libraryapi.model.Usuario;
 import com.carlosjpa.libraryapi.security.SecurityService;
 import com.carlosjpa.libraryapi.service.AutorService;
 import com.carlosjpa.libraryapi.service.UsuarioService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/autores")
 @RequiredArgsConstructor
+@Tag(name = "Autores")
 //localhost:8080/autores
 public class AutorController implements GenericController {
 
@@ -34,6 +39,12 @@ public class AutorController implements GenericController {
 
     @PostMapping
     @PreAuthorize("hasRole('GERENTE')")
+    @Operation(summary = "Salvar", description = "Cadastrar novo autor")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Cadastrado com sucesso"),
+            @ApiResponse(responseCode = "422", description = "Erro de validacao"),
+            @ApiResponse(responseCode = "409", description = "Conflito")
+    })
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
 
         var autor = mapper.toEntity(dto);
