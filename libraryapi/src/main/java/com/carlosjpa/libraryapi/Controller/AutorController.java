@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @RequestMapping("/autores")
 @RequiredArgsConstructor
 @Tag(name = "Autores")
-//localhost:8080/autores
+@Slf4j
 public class AutorController implements GenericController {
 
 
@@ -46,6 +47,8 @@ public class AutorController implements GenericController {
             @ApiResponse(responseCode = "409", description = "Conflito")
     })
     public ResponseEntity<Object> salvar(@RequestBody @Valid AutorDTO dto) {
+
+        log.info("Cadastrando novo autor: {}",dto.nome());
 
         var autor = mapper.toEntity(dto);
         autorService.salvar(autor);
@@ -84,9 +87,12 @@ public class AutorController implements GenericController {
             (@RequestParam(value = "nome", required = false) String nome,
              @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
 
+
         List<Autor> resultado = autorService.pesquisaByExample(nome, nacionalidade);
 
         List<AutorDTO> lista = resultado.stream().map(mapper::toDto).toList();
+
+
 
         return ResponseEntity.ok(lista);
     }
